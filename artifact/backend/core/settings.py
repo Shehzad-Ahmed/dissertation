@@ -16,6 +16,9 @@ from pathlib import Path
 env = environ.Env(
     SECRET_KEY=(str, 'Careless--Dev'),
     DEBUG=(bool, False),
+    ALLOWED_HOSTS=(str, 'localhost'),
+    TEST_DATABASE_NAME=(str, 'ecommerce_test'),
+    DATABASE_URL=(str, '')
 )
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -49,6 +52,7 @@ INSTALLED_APPS = [
     'rest_framework_simplejwt',
     'django_filters',
     'core',
+    'inventory',
 ]
 
 MIDDLEWARE = [
