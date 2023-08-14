@@ -24,7 +24,7 @@ class Users(Base, AbstractUser):
         },
     )
 
-    date_of_birth = models.DateField(null=False)
+    date_of_birth = models.DateField(null=True)
 
     username = None
 
