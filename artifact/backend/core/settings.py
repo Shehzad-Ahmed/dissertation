@@ -18,7 +18,9 @@ env = environ.Env(
     DEBUG=(bool, False),
     ALLOWED_HOSTS=(str, 'localhost'),
     TEST_DATABASE_NAME=(str, 'ecommerce_test'),
-    DATABASE_URL=(str, '')
+    DATABASE_URL=(str, ''),
+    ELASTICSEARCH_URL=(str, 'http://localhost:9200'),
+    ELASTICSEARCH_API_KEY=(str, '')
 )
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -185,4 +187,9 @@ SIMPLE_JWT = {
     'SLIDING_TOKEN_LIFETIME': timedelta(minutes=5),
     'SLIDING_TOKEN_REFRESH_LIFETIME': timedelta(days=1),
 
+}
+
+ELASTICSEARCH = {
+    "URL": env("ELASTICSEARCH_URL"),
+    "API_KEY": env("ELASTICSEARCH_API_KEY"),
 }
