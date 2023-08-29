@@ -1,0 +1,11 @@
+tenant: "public"
+namespace: "default"
+name: "elasticsearch-sink"
+inputs: ["elasticsearch-sink"]
+archive: "connectors/pulsar-io-elastic-search-3.1.0.nar"
+parallelism: 1
+
+configs:
+    elasticSearchUrl: "http://elasticsearch:9200"
+    indexName: "products"
+    maxRetries: 2
