@@ -9,3 +9,5 @@ configs:
     elasticSearchUrl: "http://elasticsearch:9200"
     indexName: "products"
     maxRetries: 2
+    schemaEnable: true
+    keyIgnore: false

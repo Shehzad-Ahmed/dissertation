@@ -99,6 +99,7 @@ services:
       - postgres
     volumes:
       - ./pulsar/connectors:/pulsar/connectors/
+      - ./pulsar/functions:/pulsar/functions/
     command: bash -c "bin/apply-config-from-env.py conf/broker.conf && exec bin/pulsar broker"
 
   postgres:
@@ -115,9 +116,7 @@ services:
     volumes:
       - ./.localdata/db-data/:/var/lib/postgresql/data/
     command: [ "postgres", "-c", "wal_level=logical" ]
-# select pg_drop_replication_slot('debezium');
-# bin/pulsar-admin source create --source-config-file connectors/debezium-postgres-source-config.yaml
-# bin/pulsar-admin sinks create --sink-config-file connectors/elasticsearch-sink.yml
+
   elasticsearch:
     image: elasticsearch:7.13.3
     container_name: elasticsearch
@@ -131,3 +130,9 @@ services:
       - ./.localdata/esdata:/usr/share/elasticsearch/data
     ports:
       - 9200:9200
+
+# select pg_drop_replication_slot('debezium');
+# bin/pulsar-admin source create --source-config-file connectors/debezium-postgres-source-config.yaml
+# bin/pulsar-admin sinks create --sink-config-file connectors/elasticsearch-sink.yml
+# bin/pulsar-client consume -s "sub-products" public/default/dbserver1.public.inventory_categories -n 0
+# bin/pulsar-client produce elasticsearch_test --messages "{\"id\":\"uniqueid123\"}"
