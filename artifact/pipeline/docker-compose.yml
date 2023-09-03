@@ -136,3 +136,4 @@ services:
 # bin/pulsar-admin sinks create --sink-config-file connectors/elasticsearch-sink.yml
 # bin/pulsar-client consume -s "sub-products" public/default/dbserver1.public.inventory_categories -n 0
 # bin/pulsar-client produce elasticsearch_test --messages "{\"id\":\"uniqueid123\"}"
+# bin/pulsar-admin functions localrun   --py functions/transformers.py   --classname transformers.PgEsTransformer   --inputs persistent://public/default/dbserver1.public.inventory_categories   --output persistent://public/default/elasticsearch-sink

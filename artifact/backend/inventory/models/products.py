@@ -22,9 +22,11 @@ class Products(Base):
 
     images = ArrayField(models.URLField(blank=True, default=""), default=list)
 
-    category = models.ForeignKey("inventory.SubCategories", null=True, default=None, on_delete=models.DO_NOTHING)
+    category = models.ForeignKey(
+        "inventory.SubCategories", null=True, default=None, on_delete=models.DO_NOTHING, blank=True
+    )
 
-    colors = models.ManyToManyField("inventory.Colors")
+    colors = models.ManyToManyField("inventory.Colors", blank=True)
 
     actual_price = models.DecimalField(max_digits=15, decimal_places=2, default=0)
 

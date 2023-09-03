@@ -11,3 +11,4 @@ configs:
     maxRetries: 2
     schemaEnable: true
     keyIgnore: false
+    primaryFields: "id"
