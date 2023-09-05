@@ -11,7 +11,8 @@ class ProductsIndex:
             "id": {
                 "type": "keyword", "index": False
             },
-            "name": {"type": "text"},
+            "name": {"type": "text", "analyzer": "standard"},
+            "primary_description": {"type": "text", "analyzer": "standard"},
+            "secondary_description": {"type": "text", "analyzer": "standard"},
         }
     }
-
