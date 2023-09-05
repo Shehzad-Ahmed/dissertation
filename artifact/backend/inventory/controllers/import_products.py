@@ -1,3 +1,5 @@
+import re
+
 import numpy as np
 import pandas as pd
 from django.db import transaction
@@ -34,7 +36,7 @@ class ImportProducts:
 
     @classmethod
     def parse_images(cls, row):
-        return row["images"].strip("][").strip("'").split(',')
+        return re.sub("[\[ \]']", '', row["images"]).split(',')
 
     @classmethod
     def parse_category(cls, row):
@@ -49,7 +51,7 @@ class ImportProducts:
     def get_or_create_product(cls, data):
         with transaction.atomic():
             category = data.pop("category", None)
-            product, created = Products.objects.get_or_create(
+            product, created = Products.objects.update_or_create(
                 item_id=data["item_id"],
                 defaults=data
             )
