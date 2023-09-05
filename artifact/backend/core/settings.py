@@ -20,7 +20,8 @@ env = environ.Env(
     TEST_DATABASE_NAME=(str, 'ecommerce_test'),
     DATABASE_URL=(str, ''),
     ELASTICSEARCH_URL=(str, 'http://localhost:9200'),
-    ELASTICSEARCH_API_KEY=(str, '')
+    ELASTICSEARCH_API_KEY=(str, ''),
+    DJANGO_LOG_LEVEL=(str, 'INFO')
 )
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -60,6 +61,7 @@ INSTALLED_APPS = [
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -193,3 +195,29 @@ ELASTICSEARCH = {
     "URL": env("ELASTICSEARCH_URL"),
     "API_KEY": env("ELASTICSEARCH_API_KEY"),
 }
+
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "handlers": {
+        "console": {
+            "class": "logging.StreamHandler",
+        },
+    },
+    "root": {
+        "handlers": ["console"],
+        "level": "WARNING",
+    },
+    "loggers": {
+        "django": {
+            "handlers": ["console"],
+            "level": env("DJANGO_LOG_LEVEL"),
+            "propagate": False,
+        },
+    },
+}
+
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:3001",
+    "http://localhost:3000"
+]
