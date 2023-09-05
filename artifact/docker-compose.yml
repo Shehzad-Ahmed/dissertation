@@ -12,12 +12,23 @@ services:
       - backend/.env
     ports:
       - 8008:8004
-    links:
-      - postgres
-      - elasticsearch
+#    links:
+#      - postgres
+#      - elasticsearch
     volumes:
       - ./backend:/app
     command: bash -c "./app/start.sh"
+  frontend:
+    container_name: ecommerce-frontend
+    networks:
+      - pipeline_pulsar
+    image: node:16.20.0
+    ports:
+      - 3001:3000
+    volumes:
+      - ./frontend:/app
+    working_dir: /app
+    command: bash -c "yarn && yarn start"
 #  postgres:
 #      # Official Postgres image from DockerHub (we use the last version)
 #    image: 'debezium/example-postgres'

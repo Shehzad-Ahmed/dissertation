@@ -134,6 +134,6 @@ services:
 # select pg_drop_replication_slot('debezium');
 # bin/pulsar-admin source create --source-config-file connectors/debezium-postgres-source-config.yaml
 # bin/pulsar-admin sinks create --sink-config-file connectors/elasticsearch-sink.yml
+# bin/pulsar-admin functions create   --py functions/transformers.py   --classname transformers.PgEsTransformer   --inputs persistent://public/default/dbserver1.public.inventory_products   --output persistent://public/default/elasticsearch-sink
 # bin/pulsar-client consume -s "sub-products" public/default/dbserver1.public.inventory_categories -n 0
 # bin/pulsar-client produce elasticsearch_test --messages "{\"id\":\"uniqueid123\"}"
-# bin/pulsar-admin functions localrun   --py functions/transformers.py   --classname transformers.PgEsTransformer   --inputs persistent://public/default/dbserver1.public.inventory_categories   --output persistent://public/default/elasticsearch-sink
