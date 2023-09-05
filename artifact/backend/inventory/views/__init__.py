@@ -1,0 +1,1 @@
+from inventory.views.products import ProductsSearchViewSet
