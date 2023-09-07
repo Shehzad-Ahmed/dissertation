@@ -3,6 +3,16 @@ networks:
   pipeline_pulsar:
     external: true
 services:
+  services:
+    container_name: nginx
+    image: nginx:latest
+    networks:
+      - pipeline_pulsar
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf
+    ports:
+      - 80:80
+      - 443:443
   backend:
     container_name: ecommerce-backend
     networks:
@@ -12,9 +22,6 @@ services:
       - backend/.env
     ports:
       - 8008:8004
-#    links:
-#      - postgres
-#      - elasticsearch
     volumes:
       - ./backend:/app
     command: bash -c "./app/start.sh"
@@ -29,118 +36,4 @@ services:
       - ./frontend:/app
     working_dir: /app
     command: bash -c "yarn && yarn start"
-#  postgres:
-#      # Official Postgres image from DockerHub (we use the last version)
-#    image: 'debezium/example-postgres'
-#    ports:
-#      - 5434:5432
-#    environment:
-#      POSTGRES_USER: postgres # The PostgreSQL user (useful to connect to the database)
-#      POSTGRES_PASSWORD: postgres # The PostgreSQL password (useful to connect to the database)
-#      POSTGRES_DB: ecommerce # The PostgreSQL default database (automatically created at first launch)
-#    volumes:
-#      - ./db-data/:/var/lib/postgresql/data/
-#    command: [ "postgres", "-c", "wal_level=logical" ]
-#  elasticsearch:
-#    image: elasticsearch:8.8.1
-#    container_name: elasticsearch
-#    environment:
-#      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
-#      - discovery.type=single-node
-#      - xpack.security.enabled=false
-#    volumes:
-#      - ./esdata:/usr/share/elasticsearch/data
-#    ports:
-#      - 9200:9200
-# Here starts the pipeline configuration.
 
-#  pulsar:
-#    image: apachepulsar/pulsar
-#    restart: always
-#    ports:
-#      - "6650:6650"
-#      - "8080:8080"
-#    command:
-#      - "bin/pulsar"
-#      - "standalone"
-#    healthcheck:
-#      test: [ "CMD", "curl", "-f", "http://localhost:8080/admin/clusters" ]
-#      interval: 30s
-#      timeout: 10s
-#      retries: 5
-#  debezium:
-#    image: debezium/server
-#    restart: always
-#    ports:
-#      - "9080:8080"
-#    depends_on:
-#      - "broker"
-#      - "postgres"
-#    links:
-#      - "broker"
-#      - "postgres"
-#    volumes:
-#      - ./conf:/debezium/conf
-#      - ./data:/debezium/data
-
-
-#-----
-#  zookeeper:
-#    image: wurstmeister/zookeeper:latest
-#    environment:
-#      ZOOKEEPER_CLIENT_PORT: 2181
-#      ZOOKEEPER_TICK_TIME: 2000
-#    ports:
-#      - 2181:2181
-#      - 2888:2888
-#      - 3888:3888
-#  debezium:
-#    image: debezium/server
-#    restart: always
-#    ports:
-#      - "9080:8080"
-#    depends_on:
-##      - "pulsar"
-#      - "postgres"
-#    links:
-##      - "pulsar"
-#      - "postgres"
-#    volumes:
-#      - "$PWD/conf:/debezium/conf"
-#      - "$PWD/data:/debezium/data"
-#  kconnect:
-#    image: debezium/connect
-#    ports:
-#      - 8083:8083
-#    environment:
-#      CONFIG_STORAGE_TOPIC: my_connect_configs
-#      OFFSET_STORAGE_TOPIC: my_connect_offsets
-#      STATUS_STORAGE_TOPIC: my_connect_statuses
-#      BOOTSTRAP_SERVERS: kafka1:29092,kafka2:29093
-#    links:
-#      - zookeeper
-#      - postgres
-#    depends_on:
-#      - zookeeper
-#      - postgres
-#  pulsar:
-#    image: apachepulsar/pulsar:2.5.2
-#    restart: always
-#    ports:
-#      - "6650:6650"
-#      - "8080:8080"
-#    command:
-#      - "bin/pulsar"
-#      - "standalone"
-#      - "bin/pulsar-admin sinks localrun \
-#             --archive connectors/pulsar-io-elastic-search-3.1.0.nar \
-#             --tenant public \
-#             --namespace default \
-#             --name elasticsearch-test-sink \
-#             --sink-config '{'elasticSearchUrl':'http://localhost:9200','indexName': 'my_index','username': 'scooby','password': 'doobie' }' \
-#             --inputs elasticsearch_test"
-#    healthcheck:
-#      test: [ "CMD", "curl", "-f", "http://localhost:8080/admin/clusters" ]
-#      interval: 30s
-#      timeout: 10s
-#      retries: 5
