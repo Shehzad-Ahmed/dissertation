@@ -102,6 +102,16 @@ services:
       - ./pulsar/functions:/pulsar/functions/
     command: bash -c "bin/apply-config-from-env.py conf/broker.conf && exec bin/pulsar broker"
 
+  pulsar-manager:
+    image: "apachepulsar/pulsar-manager:v0.3.0"
+    ports:
+      - "9527:9527"
+      - "7750:7750"
+    environment:
+      SPRING_CONFIGURATION_FILE: /pulsar-manager/pulsar-manager/application.properties
+    networks:
+      - pulsar
+
   postgres:
     # Official Postgres image from DockerHub (we use the last version)
     image: 'debezium/example-postgres'
