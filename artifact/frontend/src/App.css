@@ -1,0 +1,21 @@
+.App-header {
+  background-color: #282c34;
+  min-height: 4rem;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  color: white;
+}
+
+.site-container {
+  min-height: 100vh;
+}
+
+.main-container {
+  flex: 1;
+  padding: 1rem;
+}
+
+.cart-img-thumbnail {
+  height: 80px;
+}
