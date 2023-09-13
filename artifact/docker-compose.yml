@@ -3,8 +3,8 @@ networks:
   pipeline_pulsar:
     external: true
 services:
-  services:
-    container_name: nginx
+  nginx:
+    container_name: ecommerce-nginx
     image: nginx:latest
     networks:
       - pipeline_pulsar
@@ -37,3 +37,13 @@ services:
     working_dir: /app
     command: bash -c "yarn && yarn start"
 
+  pulsar-manager:
+    container_name: pulsar-manager
+    image: "apachepulsar/pulsar-manager:v0.3.0"
+    ports:
+      - "9527:9527"
+      - "7750:7750"
+    environment:
+      SPRING_CONFIGURATION_FILE: /pulsar-manager/pulsar-manager/application.properties
+    networks:
+      - pipeline_pulsar

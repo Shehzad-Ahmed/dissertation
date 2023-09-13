@@ -57,6 +57,7 @@ services:
       # otherwise every time we run docker compose uo or down we fail to start due to Cookie
       # See: https://github.com/apache/bookkeeper/blob/405e72acf42bb1104296447ea8840d805094c787/bookkeeper-server/src/main/java/org/apache/bookkeeper/bookie/Cookie.java#L57-68
       - advertisedAddress=bookie
+      - bookiePort=3181
       - BOOKIE_MEM=-Xms512m -Xmx512m -XX:MaxDirectMemorySize=256m
     depends_on:
       zookeeper:
@@ -66,6 +67,31 @@ services:
     # Map the local directory to the container to avoid bookie startup failure due to insufficient container disks.
     volumes:
       - ./.localdata/bookkeeper:/pulsar/data/bookkeeper
+    command: bash -c "bin/apply-config-from-env.py conf/bookkeeper.conf && exec bin/pulsar bookie"
+
+  bookie_2:
+    image: apachepulsar/pulsar:3.1.0
+    container_name: bookie_2
+    restart: on-failure
+    networks:
+      - pulsar
+    environment:
+      - clusterName=cluster-a
+      - zkServers=zookeeper:2181
+      - metadataServiceUri=metadata-store:zk:zookeeper:2181
+      # otherwise every time we run docker compose uo or down we fail to start due to Cookie
+      # See: https://github.com/apache/bookkeeper/blob/405e72acf42bb1104296447ea8840d805094c787/bookkeeper-server/src/main/java/org/apache/bookkeeper/bookie/Cookie.java#L57-68
+      - advertisedAddress=bookie
+      - bookiePort=3182
+      - BOOKIE_MEM=-Xms512m -Xmx512m -XX:MaxDirectMemorySize=256m
+    depends_on:
+      zookeeper:
+        condition: service_healthy
+      pulsar-init:
+        condition: service_completed_successfully
+    # Map the local directory to the container to avoid bookie startup failure due to insufficient container disks.
+    volumes:
+      - ./.localdata/bookkeeper2:/pulsar/data/bookkeeper
     command: bash -c "bin/apply-config-from-env.py conf/bookkeeper.conf && exec bin/pulsar bookie"
 
   # Start broker
@@ -80,9 +106,9 @@ services:
       - metadataStoreUrl=zk:zookeeper:2181
       - zookeeperServers=zookeeper:2181
       - clusterName=cluster-a
-      - managedLedgerDefaultEnsembleSize=1
-      - managedLedgerDefaultWriteQuorum=1
-      - managedLedgerDefaultAckQuorum=1
+      - managedLedgerDefaultEnsembleSize=2
+      - managedLedgerDefaultWriteQuorum=2
+      - managedLedgerDefaultAckQuorum=2
       - advertisedAddress=broker
       - advertisedListeners=external:pulsar://127.0.0.1:6650
       - PULSAR_MEM=-Xms512m -Xmx512m -XX:MaxDirectMemorySize=256m
@@ -102,16 +128,6 @@ services:
       - ./pulsar/functions:/pulsar/functions/
     command: bash -c "bin/apply-config-from-env.py conf/broker.conf && exec bin/pulsar broker"
 
-  pulsar-manager:
-    image: "apachepulsar/pulsar-manager:v0.3.0"
-    ports:
-      - "9527:9527"
-      - "7750:7750"
-    environment:
-      SPRING_CONFIGURATION_FILE: /pulsar-manager/pulsar-manager/application.properties
-    networks:
-      - pulsar
-
   postgres:
     # Official Postgres image from DockerHub (we use the last version)
     image: 'debezium/example-postgres'
@@ -125,7 +141,9 @@ services:
       POSTGRES_DB: ecommerce # The PostgreSQL default database (automatically created at first launch)
     volumes:
       - ./.localdata/db-data/:/var/lib/postgresql/data/
-    command: [ "postgres", "-c", "wal_level=logical" ]
+    command: > 
+        -c wal_level=logical
+        -c max_wal_size=5GB
 
   elasticsearch:
     image: elasticsearch:7.13.3
@@ -142,8 +160,13 @@ services:
       - 9200:9200
 
 # select pg_drop_replication_slot('debezium');
+# bin/pulsar-client consume -s "sub-products" public/default/dbserver1.public.inventory_categories -n 0
+# bin/pulsar-client produce elasticsearch_test --messages "{\"id\":\"uniqueid123\"}"
+
 # bin/pulsar-admin source create --source-config-file connectors/debezium-postgres-source-config.yaml
 # bin/pulsar-admin sinks create --sink-config-file connectors/elasticsearch-sink.yml
 # bin/pulsar-admin functions create   --py functions/transformers.py   --classname transformers.PgEsTransformer   --inputs persistent://public/default/dbserver1.public.inventory_products   --output persistent://public/default/elasticsearch-sink
-# bin/pulsar-client consume -s "sub-products" public/default/dbserver1.public.inventory_categories -n 0
-# bin/pulsar-client produce elasticsearch_test --messages "{\"id\":\"uniqueid123\"}"
+
+# bin/pulsar-admin sources delete --name debezium-postgres-source
+# bin/pulsar-admin sink delete --name elasticsearch-sink
+# bin/pulsar-admin functions delete --name PgEsTransformer
