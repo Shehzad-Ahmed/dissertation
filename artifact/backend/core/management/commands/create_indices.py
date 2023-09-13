@@ -10,6 +10,7 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
 
         for IndexClass in INDEX_CLASSES.values():
+            es_client.ingest.put_pipeline(id=IndexClass.pipeline_name, body=IndexClass.pipeline_body)
             es_client.indices.create(
                 index=IndexClass.index,
                 body={
