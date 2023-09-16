@@ -57,7 +57,6 @@ services:
       # otherwise every time we run docker compose uo or down we fail to start due to Cookie
       # See: https://github.com/apache/bookkeeper/blob/405e72acf42bb1104296447ea8840d805094c787/bookkeeper-server/src/main/java/org/apache/bookkeeper/bookie/Cookie.java#L57-68
       - advertisedAddress=bookie
-      - bookiePort=3181
       - BOOKIE_MEM=-Xms512m -Xmx512m -XX:MaxDirectMemorySize=256m
     depends_on:
       zookeeper:
@@ -69,9 +68,9 @@ services:
       - ./.localdata/bookkeeper:/pulsar/data/bookkeeper
     command: bash -c "bin/apply-config-from-env.py conf/bookkeeper.conf && exec bin/pulsar bookie"
 
-  bookie_2:
+  bookie2:
     image: apachepulsar/pulsar:3.1.0
-    container_name: bookie_2
+    container_name: bookie2
     restart: on-failure
     networks:
       - pulsar
@@ -81,8 +80,7 @@ services:
       - metadataServiceUri=metadata-store:zk:zookeeper:2181
       # otherwise every time we run docker compose uo or down we fail to start due to Cookie
       # See: https://github.com/apache/bookkeeper/blob/405e72acf42bb1104296447ea8840d805094c787/bookkeeper-server/src/main/java/org/apache/bookkeeper/bookie/Cookie.java#L57-68
-      - advertisedAddress=bookie
-      - bookiePort=3182
+      - advertisedAddress=bookie2
       - BOOKIE_MEM=-Xms512m -Xmx512m -XX:MaxDirectMemorySize=256m
     depends_on:
       zookeeper:
@@ -92,6 +90,30 @@ services:
     # Map the local directory to the container to avoid bookie startup failure due to insufficient container disks.
     volumes:
       - ./.localdata/bookkeeper2:/pulsar/data/bookkeeper
+    command: bash -c "bin/apply-config-from-env.py conf/bookkeeper.conf && exec bin/pulsar bookie"
+
+  bookie3:
+    image: apachepulsar/pulsar:3.1.0
+    container_name: bookie3
+    restart: on-failure
+    networks:
+      - pulsar
+    environment:
+      - clusterName=cluster-a
+      - zkServers=zookeeper:2181
+      - metadataServiceUri=metadata-store:zk:zookeeper:2181
+      # otherwise every time we run docker compose uo or down we fail to start due to Cookie
+      # See: https://github.com/apache/bookkeeper/blob/405e72acf42bb1104296447ea8840d805094c787/bookkeeper-server/src/main/java/org/apache/bookkeeper/bookie/Cookie.java#L57-68
+      - advertisedAddress=bookie3
+      - BOOKIE_MEM=-Xms512m -Xmx512m -XX:MaxDirectMemorySize=256m
+    depends_on:
+      zookeeper:
+        condition: service_healthy
+      pulsar-init:
+        condition: service_completed_successfully
+    # Map the local directory to the container to avoid bookie startup failure due to insufficient container disks.
+    volumes:
+      - ./.localdata/bookkeeper3:/pulsar/data/bookkeeper
     command: bash -c "bin/apply-config-from-env.py conf/bookkeeper.conf && exec bin/pulsar bookie"
 
   # Start broker
@@ -106,9 +128,9 @@ services:
       - metadataStoreUrl=zk:zookeeper:2181
       - zookeeperServers=zookeeper:2181
       - clusterName=cluster-a
-      - managedLedgerDefaultEnsembleSize=2
-      - managedLedgerDefaultWriteQuorum=2
-      - managedLedgerDefaultAckQuorum=2
+      - managedLedgerDefaultEnsembleSize=1
+      - managedLedgerDefaultWriteQuorum=1
+      - managedLedgerDefaultAckQuorum=1
       - advertisedAddress=broker
       - advertisedListeners=external:pulsar://127.0.0.1:6650
       - PULSAR_MEM=-Xms512m -Xmx512m -XX:MaxDirectMemorySize=256m
@@ -117,6 +139,10 @@ services:
       zookeeper:
         condition: service_healthy
       bookie:
+        condition: service_started
+      bookie2:
+        condition: service_started
+      bookie3:
         condition: service_started
     ports:
       - "6650:6650"
@@ -170,3 +196,17 @@ services:
 # bin/pulsar-admin sources delete --name debezium-postgres-source
 # bin/pulsar-admin sink delete --name elasticsearch-sink
 # bin/pulsar-admin functions delete --name PgEsTransformer
+
+#bin/pulsar-admin topics delete public/default/elasticsearch-sink
+#bin/pulsar-admin topics delete public/default/dbserver1.public.django_content_type
+#bin/pulsar-admin topics delete public/default/dbserver1.public.inventory_categories
+#bin/pulsar-admin topics delete public/default/dbserver1.public.django_migrations
+#bin/pulsar-admin topics delete public/default/dbserver1.public.auth_permission
+#bin/pulsar-admin topics delete public/default/dbserver1.public.inventory_subcategories
+#bin/pulsar-admin topics delete public/default/debezium-postgres-source-debezium-offset-topic
+#bin/pulsar-admin topics delete public/default/dbserver1.public.django_session
+#bin/pulsar-admin topics delete public/default/dbserver1.public.users
+#bin/pulsar-admin topics delete public/default/dbserver1.public.inventory_products
+#bin/pulsar-admin topics delete public/default/debezium-postgres-topic
+
+# docker rm broker bookie zookeeper pulsar-init

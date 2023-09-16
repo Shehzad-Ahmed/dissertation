@@ -16,6 +16,8 @@ configs:
     database.server.name: "dbserver1"
     database.whitelist: "ecommerce"
     schema.whitelist: "public"
+#    key.converter: "org.apache.kafka.connect.json.JsonConverter"
+#    value.converter: "org.apache.kafka.connect.json.JsonConverter"
 
     ## PULSAR_SERVICE_URL_CONFIG
     pulsar.service.url: "pulsar://127.0.0.1:6650"
