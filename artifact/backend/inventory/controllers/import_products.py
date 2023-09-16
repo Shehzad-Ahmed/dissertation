@@ -20,15 +20,15 @@ class ImportProducts:
         for index, row in data_frame.iterrows():
             p_data["name"] = row["title"]
             p_data["item_id"] = row["_id"]
-            # p_data["full_description"] = row["discount"]
-            # p_data["primary_description"] = row["discount"]
+            p_data["full_description"] = row["discount"]
+            p_data["primary_description"] = row["discount"]
             p_data["pid"] = row["pid"]
             p_data["url"] = row["url"]
             p_data["images"] = self.parse_images(row)
-            # p_data["category"] = self.parse_category(row)
-            # p_data["actual_price"] = self.parse_price(row["actual_price"])
-            # p_data["selling_price"] = self.parse_price(row["selling_price"])
-            # p_data["extra_details"] = json.dumps(row["product_details"])
+            p_data["category"] = self.parse_category(row)
+            p_data["actual_price"] = self.parse_price(row["actual_price"])
+            p_data["selling_price"] = self.parse_price(row["selling_price"])
+            p_data["extra_details"] = json.dumps(row["product_details"])
             try:
                 self.get_or_create_product(p_data)
             except Exception as e:

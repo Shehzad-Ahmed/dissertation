@@ -5,7 +5,8 @@ class ProductsIndex:
     index = "products"
 
     settings = {
-        "index.default_pipeline": "set_document_indexed_creation_date"
+        "index.default_pipeline": "set_document_indexed_creation_date",
+        "index.max_result_window": 30000
     }
 
     pipeline_name = "set_document_indexed_creation_date"
@@ -15,7 +16,7 @@ class ProductsIndex:
         "processors": [
             {
                 "script": {
-                    "source": "ctx.indexed_at = new Date();"
+                    "source": "ctx._indexed_at = new Date();"
                 }
             }
         ]

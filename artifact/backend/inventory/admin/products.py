@@ -28,7 +28,7 @@ class ProductsAdmin(admin.ModelAdmin):
 
     list_filter = ("category", "colors")
 
-    list_display = ("name", )
+    list_display = ("name", "created_on")
 
     expected_headers = {
         "Name",
