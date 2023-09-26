@@ -18,8 +18,8 @@ class ProductsAdmin(admin.ModelAdmin):
 
     import_products_template = "admin/products/import_products.html"
 
-    fields = ("name", "primary_description", "secondary_description", "deleted",
-              "full_description", "item_id",  "url", "category", "colors", "images", "extra_details")
+    # fields = ("name", "primary_description", "secondary_description", "deleted",
+    #           "full_description", "item_id",  "url", "category", "colors", "images", "extra_details")
 
     readonly_fields = ("id", "created_on", "updated_on")
 

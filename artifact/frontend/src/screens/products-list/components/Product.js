@@ -45,8 +45,8 @@ export default function Product(props) {
         <Card.Text>
           {/* {product.type} */}
           <br />
-          Price: {LCR}
-          {product.price}
+/*          Price: {LCR}
+          {product.price} */
           <div>
             {/* <Availability
               availablePackages={product.availablePackages}
