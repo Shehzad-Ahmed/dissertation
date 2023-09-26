@@ -13,3 +13,9 @@ class PgEsTransformer(Function):
         if not output:
             output = {"id": input["before"]["id"]}
         return json.dumps(output)
+
+# To register the function run the following function creation command within pulsar broker.
+
+# bin/pulsar-admin functions create   --py functions/transformers.py   --classname transformers.PgEsTransformer
+# \ --inputs persistent://public/default/dbserver1.public.inventory_products
+# \ --output persistent://public/default/elasticsearch-sink

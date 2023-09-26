@@ -16,14 +16,14 @@ docker rm broker bookie bookie2 bookie3 zookeeper pulsar-init
 # Since default partitions are zero, so no need to create explicitly create topics.
 
 # Register source, transformer function, and sink.
-
 bin/pulsar-admin source create --source-config-file connectors/debezium-postgres-source-config.yaml
 bin/pulsar-admin sinks create --sink-config-file connectors/elasticsearch-sink.yml
-bin/pulsar-admin functions create   --py functions/transformers.py   --classname transformers.PgEsTransformer   --inputs persistent://public/default/dbserver1.public.inventory_products   --output persistent://public/default/elasticsearch-sink
+bin/pulsar-admin functions create   --py functions/transformers.py   --classname transformers.PgEsTransformer   
+\--inputs persistent://public/default/dbserver1.public.inventory_products   
+\--output persistent://public/default/elasticsearch-sink
 
 
 # Collect first and last documents.
-
 curl -X GET "localhost:9200/products/_search?pretty&search_type=dfs_query_then_fetch&size=1&from=0" -H 'Content-Type: application/json' -d'
 {
   "sort" : [
@@ -55,7 +55,6 @@ curl -X GET "localhost:9200/products/_search?pretty&search_type=dfs_query_then_f
       - managedLedgerDefaultAckQuorum=2
 
 # Create topics with 3 partitions
-
 bin/pulsar-admin topics create-partitioned-topic \
     persistent://public/default/dbserver1.public.inventory_products \
     --partitions 3
@@ -74,14 +73,11 @@ bin/pulsar-admin topics create-partitioned-topic \
 
 bin/pulsar-admin topics list public/default
 # Register source, transformer function, and sink.
-
 bin/pulsar-admin source create --source-config-file connectors/debezium-postgres-source-config.yaml
 bin/pulsar-admin sinks create --sink-config-file connectors/elasticsearch-sink.yml
 bin/pulsar-admin functions create   --py functions/transformers.py   --classname transformers.PgEsTransformer   --inputs persistent://public/default/dbserver1.public.inventory_products   --output persistent://public/default/elasticsearch-sink
 
-
 # Collect first and last documents.
-
 curl -X GET "localhost:9200/products/_search?pretty&search_type=dfs_query_then_fetch&size=1&from=0" -H 'Content-Type: application/json' -d'
 {
   "sort" : [
@@ -113,7 +109,6 @@ curl -X GET "localhost:9200/products/_search?pretty&search_type=dfs_query_then_f
       - managedLedgerDefaultAckQuorum=3
 
 # Create topics with 10 partitions
-
 bin/pulsar-admin topics create-partitioned-topic \
     persistent://public/default/dbserver1.public.inventory_products \
     --partitions 10
@@ -133,14 +128,11 @@ bin/pulsar-admin topics create-partitioned-topic \
 bin/pulsar-admin topics list public/default
 
 # Register source, transformer function, and sink.
-
 bin/pulsar-admin source create --source-config-file connectors/debezium-postgres-source-config.yaml
 bin/pulsar-admin sinks create --sink-config-file connectors/elasticsearch-sink.yml
 bin/pulsar-admin functions create   --py functions/transformers.py   --classname transformers.PgEsTransformer   --inputs persistent://public/default/dbserver1.public.inventory_products   --output persistent://public/default/elasticsearch-sink
 
-
 # Collect first and last documents.
-
 curl -X GET "localhost:9200/products/_search?pretty&search_type=dfs_query_then_fetch&size=1&from=0" -H 'Content-Type: application/json' -d'
 {
   "sort" : [
@@ -150,7 +142,6 @@ curl -X GET "localhost:9200/products/_search?pretty&search_type=dfs_query_then_f
   "track_total_hits": true
 }
 ' > first-indexed-entry-replication-3-partition-10.txt
-
 curl -X GET "localhost:9200/products/_search?pretty&search_type=dfs_query_then_fetch&size=1&from=0" -H 'Content-Type: application/json' -d'
 {
   "sort" : [
@@ -159,7 +150,7 @@ curl -X GET "localhost:9200/products/_search?pretty&search_type=dfs_query_then_f
   ],
   "track_total_hits": true
 }
-' > last-indexed-entry-replication-3-t2-partition-10.txt
+' > last-indexed-entry-replication-3-partition-10.txt
 
 
 

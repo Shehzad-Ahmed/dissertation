@@ -12,3 +12,6 @@ configs:
     schemaEnable: true
     keyIgnore: false
     primaryFields: "id"
+
+# To register the connector run  the following source creation command within pulsar broker.
+# bin/pulsar-admin sinks create --sink-config-file connectors/elasticsearch-sink.yml

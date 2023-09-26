@@ -21,3 +21,6 @@ configs:
 
     ## PULSAR_SERVICE_URL_CONFIG
     pulsar.service.url: "pulsar://127.0.0.1:6650"
+
+# To register the connector run the following source creation command within pulsar broker.
+# bin/pulsar-admin source create --source-config-file connectors/debezium-postgres-source-config.yaml
