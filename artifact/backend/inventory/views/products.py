@@ -12,14 +12,21 @@ class ProductsSearchViewSet(viewsets.ViewSet):
         return {
             "track_total_hits": True,
             "query": {
-                "multi_match": {
-                    "query": query_params.get("q", ""),
-                    "fields": ["name", "primary_description", "secondary_description", "full_description"],
-                    "operator": "or",
-                    "zero_terms_query": "all",
-                    "fuzziness": "AUTO",
+                "bool": {
+                    "must": {
+                        "multi_match": {
+                            "query": query_params.get("q", ""),
+                            "fields": ["name", "primary_description", "secondary_description", "full_description"],
+                            "operator": "or",
+                            "zero_terms_query": "all",
+                            "fuzziness": "AUTO",
+                        },
+                    },
+                    "filter": {
+                        "term": {"deleted": False}
+                    }
                 }
-            }
+            },
         }
 
     @property

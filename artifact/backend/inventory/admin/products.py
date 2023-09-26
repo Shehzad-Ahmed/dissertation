@@ -35,13 +35,7 @@ class ProductsAdmin(admin.ModelAdmin):
     }
 
     def import_products(self, request, *args, **kwargs):
-        """Action for importing products based on a CSV file.
-
-        If the request is not POST, we return the `ProductImportForm`
-        If the request POST,
-            - Validate the form
-            - Validate the headers on the from's `import_file` are correct
-            - Create users if they do not exist
+        """Action for importing products based on a XLSX file.
 
         :param Request request: The request object
         :return TemplateResponse: Contains the form and context
@@ -61,13 +55,6 @@ class ProductsAdmin(admin.ModelAdmin):
         if request.POST and form.is_valid():
 
             _file = form.cleaned_data["import_file"]
-
-            # header_valid = self.validate_headers(reader.fieldnames)
-            header_valid = True
-            if not header_valid:
-                messages.error(request, "Expected CSV headers are missing")
-                context["errors"].append("Invalid CSV headers")
-                return TemplateResponse(request, [self.import_products_template], context)
 
             ImportProducts(_file).start()
             messages.success(request, "Products have been imported.")
